@@ -5,7 +5,7 @@ public class Task {
     private String name;
     private String description;
     private int id;
-    private Status status;
+    Status status;
 
     public Task(String name, String description, int id) {
         this.name = name;

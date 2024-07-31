@@ -15,6 +15,12 @@ public class Subtask extends Task{
     }
 
     @Override
+    public void setStatus(Status status) {
+        this.status = status;
+        epic.recomputeStatus();
+    }
+
+    @Override
     public String toString() {
         return "Subtask{" +
                 "name='" + getName() + '\'' +
