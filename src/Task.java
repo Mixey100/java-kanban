@@ -5,7 +5,7 @@ public class Task {
     private String name;
     private String description;
     private int id;
-    Status status;
+    private Status status;
 
     public Task(String name, String description, int id) {
         this.name = name;
@@ -43,6 +43,16 @@ public class Task {
     }
 
     @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
+                ", status=" + status +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -52,17 +62,6 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
-                '}';
-
+        return Objects.hash(id);
     }
 }

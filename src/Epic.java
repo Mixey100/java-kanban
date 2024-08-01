@@ -11,8 +11,9 @@ public class Epic extends Task {
         super(name, description, id);
     }
 
-    public void addSubtask(int id, Subtask subtask) {
-        subtasksByEpic.put(id, subtask);
+    public void addSubtask(Subtask subtask) {
+        subtasksByEpic.put(subtask.getId(), subtask);
+        recomputeStatus();
     }
 
     public void removeSubtasks() {
@@ -20,11 +21,7 @@ public class Epic extends Task {
     }
 
     public List<Subtask> getSubtasksList() {
-        List<Subtask> subtasks = new ArrayList<>();
-        for (Subtask subtask : subtasksByEpic.values()) {
-            subtasks.add(subtask);
-        }
-        return subtasks;
+        return new ArrayList<>(subtasksByEpic.values());
     }
 
     public void removeSubtask(int id) {
@@ -35,7 +32,9 @@ public class Epic extends Task {
         ArrayList<Subtask> subtasks = new ArrayList<>(getSubtasksList());
 
         if (subtasks.size() == 1) {
-            setStatus(subtasks.get(0).getStatus());
+            setStatus(subtasks.getFirst().getStatus());
+        } else if (subtasks.isEmpty()) {
+            setStatus(Status.NEW);
         } else {
             int doneCount = 0;
             int newCount = 0;
@@ -55,14 +54,6 @@ public class Epic extends Task {
                 setStatus(Status.IN_PROGRESS);
             }
         }
-    }
-
-    public Map<Integer, Subtask> getSubtasksByEpic() {
-        return subtasksByEpic;
-    }
-
-    public void setSubtasksByEpic(Map<Integer, Subtask> subtasksByEpic) {
-        this.subtasksByEpic = subtasksByEpic;
     }
 
     @Override
