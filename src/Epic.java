@@ -13,11 +13,13 @@ public class Epic extends Task {
 
     public void addSubtask(Subtask subtask) {
         subtasksByEpic.put(subtask.getId(), subtask);
+        subtask.setEpic(this);
         recomputeStatus();
     }
 
     public void removeSubtasks() {
         subtasksByEpic.clear();
+        recomputeStatus();
     }
 
     public List<Subtask> getSubtasksList() {
@@ -26,33 +28,30 @@ public class Epic extends Task {
 
     public void removeSubtask(int id) {
         subtasksByEpic.remove(id);
+        recomputeStatus();
     }
 
     public void recomputeStatus() {
-        ArrayList<Subtask> subtasks = new ArrayList<>(getSubtasksList());
-
-        if (subtasks.size() == 1) {
-            setStatus(subtasks.getFirst().getStatus());
-        } else if (subtasks.isEmpty()) {
+        List<Subtask> subtasks = getSubtasksList();
+        if (subtasks.isEmpty()) {
+            setStatus(Status.NEW);
+        }
+        int doneCount = 0;
+        int newCount = 0;
+        for (Subtask subtask : subtasks) {
+            Status status = subtask.getStatus();
+            if (status == Status.DONE) {
+                doneCount++;
+            } else if (status == Status.NEW) {
+                newCount++;
+            }
+        }
+        if (doneCount == subtasks.size()) {
+            setStatus(Status.DONE);
+        } else if (newCount == subtasks.size()) {
             setStatus(Status.NEW);
         } else {
-            int doneCount = 0;
-            int newCount = 0;
-            for (Subtask subtask : subtasks) {
-                Status status = subtask.getStatus();
-                if (status == Status.DONE) {
-                    doneCount++;
-                } else if (status == Status.NEW) {
-                    newCount++;
-                }
-            }
-            if (doneCount == subtasks.size()) {
-                setStatus(Status.DONE);
-            } else if (newCount == subtasks.size()) {
-                setStatus(Status.NEW);
-            } else {
-                setStatus(Status.IN_PROGRESS);
-            }
+            setStatus(Status.IN_PROGRESS);
         }
     }
 

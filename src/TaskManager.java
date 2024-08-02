@@ -26,8 +26,6 @@ public class TaskManager {
         Subtask subtask = new Subtask(name, description, id);
         subtasksMap.put(id, subtask);
         epic.addSubtask(subtask);
-        subtask.setEpic(epic);
-        epic.recomputeStatus();
         return subtask;
     }
 
@@ -60,7 +58,6 @@ public class TaskManager {
     public void deleteSubtasks() {
         for (Epic epic : epicsMap.values()) {
             epic.removeSubtasks();
-            epic.recomputeStatus();
         }
         subtasksMap.clear();
     }
@@ -92,12 +89,8 @@ public class TaskManager {
         int epicId = newEpic.getId();
         Epic epic = epicsMap.get(epicId);
         if (epicsMap.containsKey(epicId)) {
-            if (!epic.getName().equals(newEpic.getName())) {
-                epic.setName(newEpic.getName());
-            }
-            if (!epic.getDescription().equals(newEpic.getDescription())) {
-                epic.setDescription(newEpic.getDescription());
-            }
+            epic.setName(newEpic.getName());
+            epic.setDescription(newEpic.getDescription());
         } else {
             System.out.println("Эпика с таким номером не существует.");
             return null;
@@ -119,7 +112,6 @@ public class TaskManager {
     }
 
     public void deleteTaskById(int id) {
-        Task task = tasksMap.get(id);
         tasksMap.remove(id);
     }
 
@@ -128,7 +120,6 @@ public class TaskManager {
         for (Subtask subtask : epic.getSubtasksList()) {
             subtasksMap.remove(subtask.getId());
         }
-        epic.removeSubtasks();
         epicsMap.remove(id);
     }
 
@@ -137,7 +128,6 @@ public class TaskManager {
         Epic epic = subtask.getEpic();
         epic.removeSubtask(id);
         subtasksMap.remove(id);
-        epic.recomputeStatus();
     }
 
     public List<Subtask> getSybtasksByEpic(Epic epic) {
