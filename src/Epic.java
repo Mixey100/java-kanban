@@ -5,10 +5,14 @@ import java.util.Map;
 
 public class Epic extends Task {
 
-    private Map<Integer, Subtask> subtasksByEpic = new HashMap<>();
+    private final Map<Integer, Subtask> subtasksByEpic = new HashMap<>();
 
-    public Epic(String name, String description, int id) {
-        super(name, description, id);
+    public Epic(String name, String description) {
+        super(name, description);
+    }
+
+    public Epic(int id, String name, String description) {
+        super(id, name, description);
     }
 
     public void addSubtask(Subtask subtask) {
@@ -31,10 +35,15 @@ public class Epic extends Task {
         recomputeStatus();
     }
 
+    public Map<Integer, Subtask> getSubtasksByEpic() {
+        return subtasksByEpic;
+    }
+
     public void recomputeStatus() {
         List<Subtask> subtasks = getSubtasksList();
         if (subtasks.isEmpty()) {
             setStatus(Status.NEW);
+            return;
         }
         int doneCount = 0;
         int newCount = 0;
@@ -53,6 +62,14 @@ public class Epic extends Task {
         } else {
             setStatus(Status.IN_PROGRESS);
         }
+    }
+
+    @Override
+    public Epic getClone() {
+        Epic cloneEpic = new Epic(getId(), getName(), getDescription());
+        cloneEpic.setStatus(getStatus());
+        cloneEpic.setId(getId());
+        return cloneEpic;
     }
 
     @Override

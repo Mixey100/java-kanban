@@ -7,10 +7,16 @@ public class Task {
     private int id;
     private Status status;
 
-    public Task(String name, String description, int id) {
+    public Task(String name, String description) {
         this.name = name;
         this.description = description;
+        this.status = Status.NEW;
+    }
+
+    public Task(int id, String name, String description) {
         this.id = id;
+        this.name = name;
+        this.description = description;
         this.status = Status.NEW;
     }
 
@@ -38,8 +44,19 @@ public class Task {
         this.description = description;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Task getClone() {
+        Task cloneTask = new Task(name, description);
+        cloneTask.setStatus(status);
+        cloneTask.setId(id);
+        return cloneTask;
     }
 
     @Override
