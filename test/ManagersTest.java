@@ -1,3 +1,5 @@
+import managers.Managers;
+import managers.TaskManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -5,12 +7,10 @@ class ManagersTest {
 
     @Test
     void getDefault_shouldReturnTaskManagerAndHistoryManagerNotNull() {
-
         TaskManager manager = Managers.getDefault();
-        HistoryManager historyManager = manager.getHistoryManager();
 
-        Assertions.assertNotNull(manager, "TaskManager null");
-        Assertions.assertNotNull(historyManager, "HistoryManager null");
+        Assertions.assertNotNull(manager, "managers.TaskManager null");
+        Assertions.assertNotNull(manager.getHistoryList(), "managers.HistoryManager null");
 
 
     }

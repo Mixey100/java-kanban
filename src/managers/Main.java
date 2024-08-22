@@ -1,4 +1,9 @@
-import java.util.Arrays;
+package managers;
+
+import tasks.Epic;
+import tasks.Status;
+import tasks.Subtask;
+import tasks.Task;
 
 public class Main {
 
@@ -70,7 +75,7 @@ public class Main {
             System.out.println(subtask);
         }
         System.out.println("История:");
-        for (Task task : manager.getHistoryManager().getHistory()) {
+        for (Task task : manager.getHistoryList()) {
             System.out.println(task);
         }
     }
