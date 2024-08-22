@@ -1,3 +1,9 @@
+package managers;
+
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
+
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -37,8 +43,8 @@ public class InMemoryTaskManager implements TaskManager {
         return subtask;
     }
 
-    @Override
-    public int getId() {
+
+    private int getId() {
         return id++;
     }
 
@@ -65,7 +71,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpics() {
         epicsMap.clear();
         subtasksMap.clear();
-
     }
 
     @Override
@@ -169,11 +174,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return subtask;
     }
-
     @Override
-    public HistoryManager getHistoryManager() {
-        return historyManager;
+    public List<Task> getHistoryList() {
+        return historyManager.getHistory();
     }
-
-
 }
