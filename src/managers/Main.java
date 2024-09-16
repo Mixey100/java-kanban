@@ -50,12 +50,19 @@ public class Main {
         System.out.println(manager.getEpics());
         System.out.println(manager.getSubtasks());
 
+        manager.getEpicById(2);
         manager.getEpicById(5);
         manager.getTaskById(1);
         manager.getSubtaskById(6);
+        manager.getEpicById(5);
         manager.getEpicById(2);
+        manager.getEpicById(2);
+        manager.getSubtaskById(6);
+        manager.getTaskById(1);
+        manager.getSubtaskById(6);
 
         printAllTasks(manager);
+
     }
 
     private static void printAllTasks(TaskManager manager) {
