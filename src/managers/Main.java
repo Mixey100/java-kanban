@@ -61,16 +61,6 @@ public class Main {
         manager.getTaskById(1);
         manager.getSubtaskById(6);
 
-
-        manager.deleteTaskById(1);
-        manager.deleteEpicById(5);
-        manager.deleteSubtaskById(6);
-        manager.deleteTasks();
-        manager.deleteEpics();
-        manager.deleteSubtasks();
-
-        manager.deleteSubtasks();
-        manager.deleteEpics();
         printAllTasks(manager);
 
     }
