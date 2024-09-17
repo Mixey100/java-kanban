@@ -50,7 +50,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private List<Task> getTasks() {
-        ArrayList list = new ArrayList<>();
+        ArrayList<Task> list = new ArrayList<>();
         for (Node x = head; x != null; x = x.next) {
             list.add(x.task);
         }
@@ -109,6 +109,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     public static class Node {
+      
         Node next;
         Node prev;
         Task task;
