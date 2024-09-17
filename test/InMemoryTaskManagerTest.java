@@ -22,8 +22,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void addTask_shouldSaveTask() {
-        Task task = new Task("Task", "Task_description");
-        Task expectedTask = new Task("Task", "Task_description");
+        Task task = new Task("tasks.Task", "Task_description");
+        Task expectedTask = new Task("tasks.Task", "Task_description");
 
         Task actualTask = manager.addTask(task);
 
@@ -33,7 +33,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void updateTask_shouldUpdateTaskWithSpecifiedId() {
-        Task task = new Task("Task", "Task_description");
+        Task task = new Task("tasks.Task", "Task_description");
         Task savedTask = manager.addTask(task);
         Task updatedTask = new Task(savedTask.getId(), "Task_updated", "Task_description_updated");
         Task expectedUpdatedTask = new Task(savedTask.getId(), "Task_updated", "Task_description_updated");
@@ -45,7 +45,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldSaveTaskAndFindById() {
-        Task task = new Task("Task", "Task_description");
+        Task task = new Task("tasks.Task", "Task_description");
         Task savedTask = manager.addTask(task);
         Task expectedTask = task;
 
@@ -67,7 +67,7 @@ class InMemoryTaskManagerTest {
     @Test
     void addTask_checkConstFields() {
         Task task = new Task("Task", "Task_description");
-        Task expectedTask = new Task("Task", "Task_description");
+        Task expectedTask = new Task("tasks.Task", "Task_description");
 
         Task actualTask = manager.addTask(task);
 

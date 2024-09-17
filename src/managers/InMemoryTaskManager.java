@@ -1,5 +1,7 @@
 package managers;
 
+import managers.HistoryManager;
+import managers.TaskManager;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -175,7 +177,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         Task task = tasksMap.get(id);
-        if (Objects.nonNull(task)){
+        if (Objects.nonNull(task)) {
             historyManager.add(task);
         }
         return task;
