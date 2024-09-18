@@ -74,8 +74,13 @@ public class Epic extends Task {
         return cloneEpic;
     }
 
-    @Override
+   @Override
     public String toString() {
-        return "Epic{" + "name='" + getName() + '\'' + ", description='" + getDescription() + '\'' + ", id=" + getId() + ", status=" + getStatus() + '}';
+        return "tasks.Epic{" +
+                "name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", id=" + getId() +
+                ", status=" + getStatus() +
+                '}';
     }
 }

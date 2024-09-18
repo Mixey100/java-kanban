@@ -24,8 +24,8 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void testShouldAddTaskInHistory() {
-        Task task = new Task("Task", "Task_description");
+    void add_shouldAddTaskInHistory() {
+        Task task = new Task("tasks.Task", "Task_description");
         Task savedTask = manager.addTask(task);
         manager.getTaskById(savedTask.getId());
 
@@ -36,9 +36,9 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void testCheckHistoryAddingOnTasksGet() {
-        Task task = new Task("Task", "Task_description");
-        Epic epic = new Epic("Epic", "Epic_description");
+    void add_checkHistoryAddingOnTasksGet() {
+        Task task = new Task("tasks.Task", "Task_description");
+        Epic epic = new Epic("tasks.Epic", "Epic_description");
 
         Task savedTask = manager.addTask(task);
         Epic savedEpic = manager.addEpic(epic);
@@ -54,15 +54,13 @@ class InMemoryHistoryManagerTest {
         Assertions.assertEquals(expectedList, actualList);
     }
     /**
-     * Тест прорверяет, что  задача, после второго прочтения сохранится в конце истории
-     * и удалит предыдущую
-     **/
+    /*Тест прорверяет, что измененная и ранее прочитанная задача, после второго прочтения сохранит в истории
+     * состояние первой задачи*/
     @Test
-    public void testCheckThatOldTaskWontBeRemovedOnAddingNew() {
-        Task task = new Task("Task", "Task_description");
+    public void CheckThatOldTaskWontBeRemovedOnAddingNew() {
+        Task task = new Task("tasks.Task", "Task_description");
         Task savedTask = manager.addTask(task);
         manager.getTaskById(savedTask.getId());
-
         savedTask.setName("Task_2");
         savedTask.setDescription("Task_2_description");
         savedTask.setStatus(Status.DONE);
@@ -71,24 +69,12 @@ class InMemoryHistoryManagerTest {
         manager.getTaskById(savedTask.getId());
 
         List<Task> viewHistory = manager.getHistoryList();
-        assertEquals(1, viewHistory.size());
-
-        assertEquals("Task_2", viewHistory.get(0).getName());
-        assertEquals("Task_2_description", viewHistory.get(0).getDescription());
-        assertEquals(Status.DONE, viewHistory.get(0).getStatus());
+        assertEquals(2, viewHistory.size());
+        assertEquals("tasks.Task", viewHistory.get(0).getName());
+        assertEquals("Task_description", viewHistory.get(0).getDescription());
+        assertEquals(Status.NEW, viewHistory.get(0).getStatus());
+        assertEquals("Task_2", viewHistory.get(1).getName());
+        assertEquals("Task_2_description", viewHistory.get(1).getDescription());
+        assertEquals(Status.DONE, viewHistory.get(1).getStatus());
     }
-    /**
-     * Тест прорверяет удаление задачи из истории
-     **/
-    @Test
-   public void testCheckDeleteTaskInHistory() {
-       Task task = new Task("Task", "Task_description");
-       Task savedTask = manager.addTask(task);
-
-       manager.getTaskById(savedTask.getId());
-       manager.deleteTaskById(savedTask.getId());
-
-       List<Task> viewHistory = manager.getHistoryList();
-       assertEquals(0, viewHistory.size());
-   }
 }
