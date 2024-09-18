@@ -178,4 +178,3 @@ public class InMemoryTaskManager implements TaskManager {
     public List<Task> getHistoryList() {
         return historyManager.getHistory();
     }
-}

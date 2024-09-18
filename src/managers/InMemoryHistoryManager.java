@@ -2,6 +2,7 @@ package managers;
 
 import tasks.Task;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             historyList.removeFirst();
         }
     }
-
+  
     @Override
     public List<Task> getHistory() {
         return historyList;
