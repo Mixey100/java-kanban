@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Status;
 import tasks.Task;
+import tasks.Subtask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,17 +79,48 @@ class InMemoryHistoryManagerTest {
         assertEquals(Status.DONE, viewHistory.get(0).getStatus());
     }
     /**
-     * Тест прорверяет удаление задачи из истории
+     * Тест прорверяет удаление задачи из истории в начале, в середине и в конце, а также удаление подзадачи при
+     * удаленнии эпика
      **/
     @Test
     public void testCheckDeleteTaskInHistory() {
         Task task = new Task("Task", "Task_description");
+        Epic epic = new Epic("Epic", "Epic_description");
+        Subtask subtask = new Subtask("Subtask", "Subtask_description");
         Task savedTask = manager.addTask(task);
+        Epic savedEpic = manager.addEpic(epic);
+        Subtask savedSubtask = manager.addSubtask(epic, subtask);
 
         manager.getTaskById(savedTask.getId());
+        manager.getEpicById(savedEpic.getId());
         manager.deleteTaskById(savedTask.getId());
 
         List<Task> viewHistory = manager.getHistoryList();
+        assertEquals(1, viewHistory.size());
+        assertEquals(epic, viewHistory.get(0));
+
+        savedTask = manager.addTask(task);
+        manager.getTaskById(savedTask.getId());
+        manager.getSubtaskById(savedSubtask.getId());
+        manager.deleteTaskById(savedTask.getId());
+
+        viewHistory = manager.getHistoryList();
+        assertEquals(2, viewHistory.size());
+        assertEquals(epic, viewHistory.get(0));
+        assertEquals(subtask, viewHistory.get(1));
+
+        savedTask = manager.addTask(task);
+        manager.getTaskById(savedTask.getId());
+        manager.deleteTaskById(savedTask.getId());
+
+        viewHistory = manager.getHistoryList();
+        assertEquals(2, viewHistory.size());
+        assertEquals(epic, viewHistory.get(0));
+        assertEquals(subtask, viewHistory.get(1));
+
+        manager.deleteEpicById(savedEpic.getId());
+        viewHistory = manager.getHistoryList();
         assertEquals(0, viewHistory.size());
+
     }
 }

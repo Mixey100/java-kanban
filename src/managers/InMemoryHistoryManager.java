@@ -8,9 +8,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private final Map<Integer, Node> nodesMap = new HashMap<>();
 
-    Node head;
-    Node tail;
-    int size;
+    private Node head;
+    private Node tail;
+    private int size;
 
     @Override
     public void add(Task task) {
@@ -62,8 +62,8 @@ public class InMemoryHistoryManager implements HistoryManager {
             x.task = task;
             return;
         }
-        Node next = x.next;
-        Node prev = x.prev;
+        final Node next = x.next;
+        final Node prev = x.prev;
         if (next == tail) {
             next.next = x;
             x.prev = next;
@@ -110,9 +110,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public static class Node {
 
-        Node next;
-        Node prev;
-        Task task;
+        private Node next;
+        private Node prev;
+        private Task task;
 
         public Node(Node prev, Task data, Node next) {
             this.next = next;
