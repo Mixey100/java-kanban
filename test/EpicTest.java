@@ -21,7 +21,7 @@ class EpicTest {
 
     @Test
     void shouldChangeEpicStatusIfChangedSubtaskStatus() {
-        Epic epic = new Epic("Epic", "Epic_description");
+        Epic epic = new Epic("tasks.Epic", "Epic_description");
         Subtask subtask1 = new Subtask(1,"Subtask_1", "Subtask_description_1");
         Subtask subtask2 = new Subtask(2,"Subtask_2", "Subtask_description_2");
         subtask1.setEpic(epic);
