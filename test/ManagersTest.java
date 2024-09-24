@@ -9,9 +9,7 @@ class ManagersTest {
     void getDefault_shouldReturnTaskManagerAndHistoryManagerNotNull() {
         TaskManager manager = Managers.getDefault();
 
-        Assertions.assertNotNull(manager, "managers.TaskManager null");
-        Assertions.assertNotNull(manager.getHistoryList(), "managers.HistoryManager null");
-
-
+        Assertions.assertNotNull(manager, "TaskManager null");
+        Assertions.assertNotNull(manager.getHistoryList(), "HistoryManager null");
     }
 }

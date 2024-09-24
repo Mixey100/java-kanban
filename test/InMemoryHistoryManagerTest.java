@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Status;
 import tasks.Task;
+import tasks.Subtask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +25,8 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void add_shouldAddTaskInHistory() {
-        Task task = new Task("tasks.Task", "Task_description");
+    void testShouldAddTaskInHistory() {
+        Task task = new Task("Task", "Task_description");
         Task savedTask = manager.addTask(task);
         manager.getTaskById(savedTask.getId());
 
@@ -36,9 +37,9 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void add_checkHistoryAddingOnTasksGet() {
-        Task task = new Task("tasks.Task", "Task_description");
-        Epic epic = new Epic("tasks.Epic", "Epic_description");
+    void testCheckHistoryAddingOnTasksGet() {
+        Task task = new Task("Task", "Task_description");
+        Epic epic = new Epic("Epic", "Epic_description");
 
         Task savedTask = manager.addTask(task);
         Epic savedEpic = manager.addEpic(epic);
@@ -54,13 +55,15 @@ class InMemoryHistoryManagerTest {
         Assertions.assertEquals(expectedList, actualList);
     }
     /**
-    /*Тест прорверяет, что измененная и ранее прочитанная задача, после второго прочтения сохранит в истории
-     * состояние первой задачи*/
+     * Тест прорверяет, что  задача, после второго прочтения сохранится в конце истории
+     * и удалит предыдущую
+     **/
     @Test
-    public void CheckThatOldTaskWontBeRemovedOnAddingNew() {
-        Task task = new Task("tasks.Task", "Task_description");
+    public void testCheckThatOldTaskWontBeRemovedOnAddingNew() {
+        Task task = new Task("Task", "Task_description");
         Task savedTask = manager.addTask(task);
         manager.getTaskById(savedTask.getId());
+
         savedTask.setName("Task_2");
         savedTask.setDescription("Task_2_description");
         savedTask.setStatus(Status.DONE);
@@ -69,12 +72,55 @@ class InMemoryHistoryManagerTest {
         manager.getTaskById(savedTask.getId());
 
         List<Task> viewHistory = manager.getHistoryList();
+        assertEquals(1, viewHistory.size());
+
+        assertEquals("Task_2", viewHistory.get(0).getName());
+        assertEquals("Task_2_description", viewHistory.get(0).getDescription());
+        assertEquals(Status.DONE, viewHistory.get(0).getStatus());
+    }
+    /**
+     * Тест прорверяет удаление задачи из истории в начале, в середине и в конце, а также удаление подзадачи при
+     * удаленнии эпика
+     **/
+    @Test
+    public void testCheckDeleteTaskInHistory() {
+        Task task = new Task("Task", "Task_description");
+        Epic epic = new Epic("Epic", "Epic_description");
+        Subtask subtask = new Subtask("Subtask", "Subtask_description");
+        Task savedTask = manager.addTask(task);
+        Epic savedEpic = manager.addEpic(epic);
+        Subtask savedSubtask = manager.addSubtask(epic, subtask);
+
+        manager.getTaskById(savedTask.getId());
+        manager.getEpicById(savedEpic.getId());
+        manager.deleteTaskById(savedTask.getId());
+
+        List<Task> viewHistory = manager.getHistoryList();
+        assertEquals(1, viewHistory.size());
+        assertEquals(epic, viewHistory.get(0));
+
+        savedTask = manager.addTask(task);
+        manager.getTaskById(savedTask.getId());
+        manager.getSubtaskById(savedSubtask.getId());
+        manager.deleteTaskById(savedTask.getId());
+
+        viewHistory = manager.getHistoryList();
         assertEquals(2, viewHistory.size());
-        assertEquals("tasks.Task", viewHistory.get(0).getName());
-        assertEquals("Task_description", viewHistory.get(0).getDescription());
-        assertEquals(Status.NEW, viewHistory.get(0).getStatus());
-        assertEquals("Task_2", viewHistory.get(1).getName());
-        assertEquals("Task_2_description", viewHistory.get(1).getDescription());
-        assertEquals(Status.DONE, viewHistory.get(1).getStatus());
+        assertEquals(epic, viewHistory.get(0));
+        assertEquals(subtask, viewHistory.get(1));
+
+        savedTask = manager.addTask(task);
+        manager.getTaskById(savedTask.getId());
+        manager.deleteTaskById(savedTask.getId());
+
+        viewHistory = manager.getHistoryList();
+        assertEquals(2, viewHistory.size());
+        assertEquals(epic, viewHistory.get(0));
+        assertEquals(subtask, viewHistory.get(1));
+
+        manager.deleteEpicById(savedEpic.getId());
+        viewHistory = manager.getHistoryList();
+        assertEquals(0, viewHistory.size());
+
     }
 }
