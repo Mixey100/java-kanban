@@ -8,6 +8,7 @@ public class Task {
     private String description;
     private int id;
     private Status status;
+    private final TaskType type = TaskType.TASK;
 
     public Task(String name, String description) {
         this.name = name;
@@ -20,6 +21,13 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = Status.NEW;
+    }
+
+    public Task(int id, String name, String description, Status status) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
     }
 
     public String getName() {
@@ -69,6 +77,10 @@ public class Task {
                 ", id=" + id +
                 ", status=" + status +
                 '}';
+    }
+
+    public TaskType getType() {
+        return type;
     }
 
     @Override
