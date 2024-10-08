@@ -8,6 +8,7 @@ import java.util.Map;
 public class Epic extends Task {
 
     private final Map<Integer, Subtask> subtasksByEpic = new HashMap<>();
+    private final TaskType type = TaskType.EPIC;
 
     public Epic(String name, String description) {
         super(name, description);
@@ -15,6 +16,10 @@ public class Epic extends Task {
 
     public Epic(int id, String name, String description) {
         super(id, name, description);
+    }
+
+    public Epic(int id, String name, String description, Status status) {
+        super(id, name, description, status);
     }
 
     public void addSubtask(Subtask subtask) {
@@ -35,10 +40,6 @@ public class Epic extends Task {
     public void removeSubtask(int id) {
         subtasksByEpic.remove(id);
         recomputeStatus();
-    }
-
-    public Map<Integer, Subtask> getSubtasksByEpic() {
-        return subtasksByEpic;
     }
 
     public void recomputeStatus() {
@@ -72,6 +73,11 @@ public class Epic extends Task {
         cloneEpic.setStatus(getStatus());
         cloneEpic.setId(getId());
         return cloneEpic;
+    }
+
+    @Override
+    public TaskType getType() {
+        return type;
     }
 
     @Override
