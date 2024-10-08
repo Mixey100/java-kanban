@@ -6,7 +6,7 @@ import java.io.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private File file;
+    private final File file;
 
     public FileBackedTaskManager(File file) {
         this.file = file;
@@ -47,7 +47,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String str = null;
+            String str;
             boolean isTitle = true;
             while ((str = reader.readLine()) != null) {
                 if (isTitle) {
@@ -85,9 +85,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 int epicId = Integer.parseInt(values[5]);
                 Subtask subtask = new Subtask(id, name, description, Status.valueOf(status));
                 subtasksMap.put(id, subtask);
-                subtask.setEpic(epicsMap.get(epicId));
                 Epic subtasksEpic = epicsMap.get(epicId);
-                subtasksEpic.getSubtasksByEpic().put(id, subtask);
+                subtasksEpic.addSubtask(subtask);
         }
     }
 

@@ -42,10 +42,6 @@ public class Epic extends Task {
         recomputeStatus();
     }
 
-    public Map<Integer, Subtask> getSubtasksByEpic() {
-        return subtasksByEpic;
-    }
-
     public void recomputeStatus() {
         List<Subtask> subtasks = getSubtasksList();
         if (subtasks.isEmpty()) {

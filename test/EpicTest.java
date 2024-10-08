@@ -26,9 +26,9 @@ class EpicTest {
         Subtask subtask2 = new Subtask(2,"Subtask_2", "Subtask_description_2");
         subtask1.setEpic(epic);
         subtask2.setEpic(epic);
-        Map<Integer, Subtask> subtasks = epic.getSubtasksByEpic();
-        subtasks.put(subtask1.getId(), subtask1);
-        subtasks.put(subtask2.getId(), subtask2);
+
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
 
         Assertions.assertEquals(Status.NEW, epic.getStatus());
 
