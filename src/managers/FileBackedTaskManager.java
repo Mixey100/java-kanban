@@ -1,8 +1,11 @@
 package managers;
 
+import exceptions.ManagerSaveException;
 import tasks.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -14,7 +17,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public void save() {
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write("id,type,name,status,description,epic\n");
+            writer.write("id,type,name,status,description,startTime,duration,epic\n");
             for (Task task : getTasks()) {
                 writer.write(toString(task) + "\n");
             }
@@ -34,12 +37,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         switch (task.getType()) {
             case TASK:
             case EPIC:
-                str = String.format("%s,%s,%s,%s,%s", task.getId(), task.getType(), task.getName(),
-                        task.getStatus(), task.getDescription());
+                str = String.format("%s,%s,%s,%s,%s,%s,%s", task.getId(), task.getType(), task.getName(),
+                        task.getStatus(), task.getDescription(), task.getStartTime(), task.getDuration() != null
+                                ? task.getDuration().toMinutes() : null);
                 break;
             case SUBTASK:
-                str = String.format("%s,%s,%s,%s,%s,%s", task.getId(), task.getType(), task.getName(),
-                        task.getStatus(), task.getDescription(), ((Subtask) task).getEpic().getId());
+                str = String.format("%s,%s,%s,%s,%s,%s,%s,%s", task.getId(), task.getType(), task.getName(),
+                        task.getStatus(), task.getDescription(), task.getStartTime(), task.getDuration() != null
+                                ? task.getDuration().toMinutes() : null, ((Subtask) task).getEpic().getId());
         }
         return str;
     }
@@ -69,21 +74,29 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String name = values[2];
         String status = values[3];
         String description = values[4];
+        String startTime = values[5];
+        String duration = values[6];
         if (id > this.id) {
             this.id = id;
         }
         switch (TaskType.valueOf(type)) {
             case TASK:
-                Task task = new Task(id, name, description, Status.valueOf(status));
+                Task task = new Task(id, name, description, Status.valueOf(status), !startTime.equals("null")
+                        ? LocalDateTime.parse(startTime) : null, !duration.equals("null")
+                        ? Duration.ofMinutes(Integer.parseInt(duration)) : null);
                 tasksMap.put(id, task);
                 break;
             case EPIC:
-                Epic epic = new Epic(id, name, description, Status.valueOf(status));
+                Epic epic = new Epic(id, name, description, Status.valueOf(status), !startTime.equals("null")
+                        ? LocalDateTime.parse(startTime) : null, !duration.equals("null")
+                        ? Duration.ofMinutes(Integer.parseInt(duration)) : null);
                 epicsMap.put(id, epic);
                 break;
             case SUBTASK:
-                int epicId = Integer.parseInt(values[5]);
-                Subtask subtask = new Subtask(id, name, description, Status.valueOf(status));
+                int epicId = Integer.parseInt(values[7]);
+                Subtask subtask = new Subtask(id, name, description, Status.valueOf(status), !startTime.equals("null")
+                        ? LocalDateTime.parse(startTime) : null, !duration.equals("null")
+                        ? Duration.ofMinutes(Integer.parseInt(duration)) : null);
                 subtasksMap.put(id, subtask);
                 Epic subtasksEpic = epicsMap.get(epicId);
                 subtasksEpic.addSubtask(subtask);
@@ -151,7 +164,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void deleteTaskById(int ig) {
+    public void deleteTaskById(int id) {
         super.deleteTaskById(id);
         save();
     }
