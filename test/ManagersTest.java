@@ -11,7 +11,5 @@ class ManagersTest {
 
         Assertions.assertNotNull(manager, "TaskManager null");
         Assertions.assertNotNull(manager.getHistoryList(), "HistoryManager null");
-
-
     }
 }
