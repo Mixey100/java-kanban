@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
+
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -33,5 +34,20 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
         Assertions.assertThrows(ManagerValidateException.class,
                 () -> manager.addSubtask(epic, subtask2), "Должно быть исключение");
+    }
+
+    @Test
+    void testShouldSaveAgainTaskIfUpdate() {
+        LocalDateTime startTime = LocalDateTime.of(2024, 10, 9, 15, 30);
+        Duration duration = Duration.ofMinutes(30);
+        Task task = new Task("Task_1", "Task_description_1", startTime, duration);
+        Task taskToCollision = new Task("Task_2", "Task_description_2", startTime.plus(duration), duration);
+
+        Task createdTask = manager.addTask(task);
+        Task taskToUpdate = new Task(createdTask.getId(), "Task_3", "Task_description_3", startTime.minus(duration), duration);
+        manager.addTask(taskToCollision);
+        manager.updateTask(taskToUpdate);
+
+        Assertions.assertEquals(2, manager.getPrioritizedTasks().size());
     }
 }

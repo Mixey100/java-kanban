@@ -99,9 +99,15 @@ public class InMemoryTaskManager implements TaskManager {
     public Task updateTask(Task newTask) {
         int taskId = newTask.getId();
         if (tasksMap.containsKey(taskId)) {
+            prioritizedTasks.remove(tasksMap.get(newTask.getId()));
+            for (Task task : prioritizedTasks) {
+                if (notIntersected(newTask, task)) {
+                    addToPrioritizedTasks(newTask);
+                } else {
+                    prioritizedTasks.add(tasksMap.get(newTask.getId()));
+                }
+            }
             tasksMap.put(taskId, newTask);
-            prioritizedTasks.remove(newTask);
-            addToPrioritizedTasks(newTask);
             return newTask;
         } else {
             System.out.println("Задачи с таким номером не существует.");
@@ -127,11 +133,17 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask updateSubtask(Subtask newSubtask) {
         int subtaskId = newSubtask.getId();
         if (subtasksMap.containsKey(subtaskId)) {
-            subtasksMap.put(subtaskId, newSubtask);
-            prioritizedTasks.remove(newSubtask);
-            addToPrioritizedTasks(newSubtask);
+            prioritizedTasks.remove(subtasksMap.get(newSubtask.getId()));
+            for (Task task : prioritizedTasks) {
+                if (notIntersected(newSubtask, task)) {
+                    addToPrioritizedTasks(newSubtask);
+                } else {
+                    prioritizedTasks.add(tasksMap.get(newSubtask.getId()));
+                }
+            }
             Epic epic = newSubtask.getEpic();
             epic.addSubtask(newSubtask);
+            subtasksMap.put(subtaskId, newSubtask);
             return newSubtask;
         } else {
             System.out.println("Подзадачи с таким номером не существует.");
