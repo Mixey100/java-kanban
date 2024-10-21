@@ -112,6 +112,10 @@ public class Task {
         this.startTime = startTime;
     }
 
+    public TaskType getType() {
+        return type;
+    }
+
     public Task getClone() {
         Task cloneTask = new Task(name, description);
         cloneTask.setStatus(status);
@@ -119,6 +123,10 @@ public class Task {
         cloneTask.setStartTime(startTime);
         cloneTask.setDuration(duration);
         return cloneTask;
+    }
+
+    public boolean isScheduled() {
+        return startTime != null && duration != null;
     }
 
     @Override
@@ -131,10 +139,6 @@ public class Task {
                 ", startTime=" + startTime +
                 ", duration=" + duration +
                 '}';
-    }
-
-    public TaskType getType() {
-        return type;
     }
 
     @Override

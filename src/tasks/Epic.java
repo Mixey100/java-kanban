@@ -100,7 +100,7 @@ public class Epic extends Task {
         return endTime;
     }
 
-    void calculateTime() {
+    private void calculateTime() {
         if (!getSubtasksList().isEmpty()) {
             Duration durationEpic = Duration.ofMinutes(0);
             for (Subtask subtask : getSubtasksList()) {
