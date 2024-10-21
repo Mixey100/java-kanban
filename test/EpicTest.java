@@ -4,13 +4,14 @@ import tasks.Epic;
 import tasks.Status;
 import tasks.Subtask;
 
-import java.util.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 
 class EpicTest {
 
     @Test
-    void shouldEqualsEpicIfEqualsId() {
+    void testShouldEqualsEpicIfEqualsId() {
 
         Epic epic1 = new Epic("Epic1", "Epic1_description");
         Epic epic2 = new Epic("Epic2", "Epic2_description");
@@ -20,12 +21,10 @@ class EpicTest {
     }
 
     @Test
-    void shouldChangeEpicStatusIfChangedSubtaskStatus() {
-        Epic epic = new Epic("tasks.Epic", "Epic_description");
-        Subtask subtask1 = new Subtask(1,"Subtask_1", "Subtask_description_1");
-        Subtask subtask2 = new Subtask(2,"Subtask_2", "Subtask_description_2");
-        subtask1.setEpic(epic);
-        subtask2.setEpic(epic);
+    void testShouldChangeEpicStatusIfChangedSubtaskStatus() {
+        Epic epic = new Epic("Epic", "Epic_description");
+        Subtask subtask1 = new Subtask(1, "Subtask_1", "Subtask_description_1");
+        Subtask subtask2 = new Subtask(2, "Subtask_2", "Subtask_description_2");
 
         epic.addSubtask(subtask1);
         epic.addSubtask(subtask2);
@@ -41,5 +40,27 @@ class EpicTest {
 
         epic.removeSubtasks();
         Assertions.assertEquals(Status.NEW, epic.getStatus());
+    }
+
+    @Test
+    void testShouldDetermineTimeEpic() {
+        Epic epic = new Epic(0, "Epic", "Epic_description");
+        Subtask subtask1 = new Subtask(1, "Stubtask", "Subtask_description",
+                LocalDateTime.of(2024, 10, 10, 15, 15), Duration.ofMinutes(45));
+        Subtask subtask2 = new Subtask(2, "Subtask_2", "Subtask_description_2",
+                LocalDateTime.of(2024, 10, 10, 17, 30), Duration.ofMinutes(30));
+
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
+
+        Assertions.assertEquals(LocalDateTime.of(2024, 10, 10, 15, 15), epic.getStartTime());
+        Assertions.assertEquals(LocalDateTime.of(2024, 10, 10, 17, 30).plus(Duration.ofMinutes(30)), epic.getEndTime());
+        Assertions.assertEquals(Duration.ofMinutes(75), epic.getDuration());
+
+        epic.removeSubtasks();
+
+        Assertions.assertNull(epic.getStartTime());
+        Assertions.assertNull(epic.getEndTime());
+        Assertions.assertNull(epic.getDuration());
     }
 }

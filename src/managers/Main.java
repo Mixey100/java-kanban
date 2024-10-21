@@ -5,22 +5,25 @@ import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Main {
 
     public static void main(String[] args) {
 
         TaskManager manager = Managers.getDefault();
 
-        Task task1 = new Task("Задача_1", "Первая задача");
+        Task task1 = new Task("Задача_1", "Первая задача", LocalDateTime.of(2024, 10, 9, 15, 30), Duration.ofMinutes(60));
         task1 = manager.addTask(task1);
-        Task task2 = new Task("Задача_2", "Вторая задача");
+        Task task2 = new Task("Задача_2", "Вторая задача", LocalDateTime.of(2024, 10, 10, 12, 30), Duration.ofMinutes(30));
         task2 = manager.addTask(task2);
 
         Epic epic1 = new Epic("Эпик_1", "Первый эпик");
         epic1 = manager.addEpic(epic1);
-        Subtask subtask1 = new Subtask("Подзадача_1", "Первая подзадача");
+        Subtask subtask1 = new Subtask("Подзадача_1", "Первая подзадача", LocalDateTime.of(2024, 11, 10, 13, 30), Duration.ofMinutes(45));
         subtask1 = manager.addSubtask(epic1, subtask1);
-        Subtask subtask2 = new Subtask("Подзадача_2", "Вторая подзадача");
+        Subtask subtask2 = new Subtask("Подзадача_2", "Вторая подзадача", LocalDateTime.of(2024, 12, 10, 13, 45), Duration.ofMinutes(30));
         subtask2 = manager.addSubtask(epic1, subtask2);
 
         Epic epic2 = new Epic("Эпик_2", "Второй эпик");

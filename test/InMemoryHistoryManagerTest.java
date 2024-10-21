@@ -54,6 +54,7 @@ class InMemoryHistoryManagerTest {
         List<Task> actualList = manager.getHistoryList();
         Assertions.assertEquals(expectedList, actualList);
     }
+
     /**
      * Тест прорверяет, что  задача, после второго прочтения сохранится в конце истории
      * и удалит предыдущую
@@ -78,6 +79,7 @@ class InMemoryHistoryManagerTest {
         assertEquals("Task_2_description", viewHistory.get(0).getDescription());
         assertEquals(Status.DONE, viewHistory.get(0).getStatus());
     }
+
     /**
      * Тест прорверяет удаление задачи из истории в начале, в середине и в конце, а также удаление подзадачи при
      * удаленнии эпика

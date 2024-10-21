@@ -1,5 +1,8 @@
 package tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
 
     private Epic epic;
@@ -15,6 +18,18 @@ public class Subtask extends Task {
 
     public Subtask(int id, String name, String description, Status status) {
         super(id, name, description, status);
+    }
+
+    public Subtask(String name, String description, LocalDateTime startTime, Duration duration) {
+        super(name, description, startTime, duration);
+    }
+
+    public Subtask(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+        super(id, name, description, status, startTime, duration);
+    }
+
+    public Subtask(int id, String name, String description, LocalDateTime startTime, Duration duration) {
+        super(id, name, description, startTime, duration);
     }
 
     public Epic getEpic() {
@@ -37,6 +52,8 @@ public class Subtask extends Task {
         cloneSubtask.setEpic(getEpic());
         cloneSubtask.setStatus(getStatus());
         cloneSubtask.setId(getId());
+        cloneSubtask.setStartTime(getStartTime());
+        cloneSubtask.setDuration(getDuration());
         return cloneSubtask;
     }
 
@@ -52,6 +69,8 @@ public class Subtask extends Task {
                 ", description='" + getDescription() + '\'' +
                 ", id=" + getId() +
                 ", status=" + getStatus() +
+                ", startTime=" + getStartTime() +
+                ", duration=" + getDuration() +
                 '}';
     }
 }
