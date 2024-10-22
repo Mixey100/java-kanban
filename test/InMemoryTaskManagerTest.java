@@ -42,12 +42,14 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         Duration duration = Duration.ofMinutes(30);
         Task task = new Task("Task_1", "Task_description_1", startTime, duration);
         Task taskToCollision = new Task("Task_2", "Task_description_2", startTime.plus(duration), duration);
+        Task task3 = new Task("Task_3", "Task_description_3", startTime.plus(duration.multipliedBy(2)), duration);
 
         Task createdTask = manager.addTask(task);
-        Task taskToUpdate = new Task(createdTask.getId(), "Task_3", "Task_description_3", startTime.minus(duration), duration);
+        Task taskToUpdate = new Task(createdTask.getId(), "Task_4", "Task_description_4", startTime.minus(duration), duration);
         manager.addTask(taskToCollision);
+        manager.addTask(task3);
         manager.updateTask(taskToUpdate);
 
-        Assertions.assertEquals(2, manager.getPrioritizedTasks().size());
+        Assertions.assertEquals(3, manager.getPrioritizedTasks().size());
     }
 }

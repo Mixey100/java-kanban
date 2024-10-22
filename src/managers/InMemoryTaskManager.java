@@ -97,15 +97,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task updateTask(Task newTask) {
+        int count = 0;
         int taskId = newTask.getId();
         if (tasksMap.containsKey(taskId)) {
-            prioritizedTasks.remove(tasksMap.get(newTask.getId()));
+            prioritizedTasks.remove(tasksMap.get(taskId));
             for (Task task : prioritizedTasks) {
                 if (notIntersected(newTask, task)) {
-                    addToPrioritizedTasks(newTask);
-                } else {
-                    prioritizedTasks.add(tasksMap.get(newTask.getId()));
+                    count++;
                 }
+            }
+            if (count == prioritizedTasks.size()) {
+                addToPrioritizedTasks(newTask);
+            } else {
+                prioritizedTasks.add(tasksMap.get(taskId));
             }
             tasksMap.put(taskId, newTask);
             return newTask;
@@ -131,15 +135,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask updateSubtask(Subtask newSubtask) {
+        int count = 0;
         int subtaskId = newSubtask.getId();
         if (subtasksMap.containsKey(subtaskId)) {
-            prioritizedTasks.remove(subtasksMap.get(newSubtask.getId()));
+            prioritizedTasks.remove(subtasksMap.get(subtaskId));
             for (Task task : prioritizedTasks) {
                 if (notIntersected(newSubtask, task)) {
-                    addToPrioritizedTasks(newSubtask);
-                } else {
-                    prioritizedTasks.add(tasksMap.get(newSubtask.getId()));
+                    count++;
                 }
+            }
+            if (count == prioritizedTasks.size()) {
+                addToPrioritizedTasks(newSubtask);
+            } else {
+                prioritizedTasks.add(tasksMap.get(subtaskId));
             }
             Epic epic = newSubtask.getEpic();
             epic.addSubtask(newSubtask);
