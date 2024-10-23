@@ -1,165 +1,55 @@
-import managers.Managers;
-import managers.TaskManager;
+import exceptions.ManagerValidateException;
+import managers.InMemoryTaskManager;
+import managers.TaskManagerTest;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.util.List;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class InMemoryTaskManagerTest {
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
-    private TaskManager manager;
-
-    @BeforeEach
-    void init() {
-        manager = Managers.getDefault();
+    protected InMemoryTaskManager newManager() throws IOException {
+        return new InMemoryTaskManager();
     }
 
     @Test
-    void addTask_shouldSaveTask() {
-        Task task = new Task("Task", "Task_description");
-        Task expectedTask = new Task("Task", "Task_description");
-
-        Task actualTask = manager.addTask(task);
-
-        Assertions.assertNotNull(actualTask);
-        Assertions.assertEquals(expectedTask, actualTask);
-    }
-
-    @Test
-    void updateTask_shouldUpdateTaskWithSpecifiedId() {
-        Task task = new Task("Task", "Task_description");
-        Task savedTask = manager.addTask(task);
-        Task updatedTask = new Task(savedTask.getId(), "Task_updated", "Task_description_updated");
-        Task expectedUpdatedTask = new Task(savedTask.getId(), "Task_updated", "Task_description_updated");
-
-        Task actualUpdatedTask = manager.updateTask(updatedTask);
-
-        Assertions.assertEquals(expectedUpdatedTask, actualUpdatedTask);
-    }
-
-    @Test
-    void shouldSaveTaskAndFindById() {
-        Task task = new Task("Task", "Task_description");
-        Task savedTask = manager.addTask(task);
-        Task expectedTask = task;
-
-        Task actualTask = manager.getTaskById(savedTask.getId());
-
-        Assertions.assertEquals(expectedTask, actualTask);
-    }
-
-    @Test
-    void addTask_checkConflictId() {
-        Task task = new Task(10, "Task", "Task_description");
-        Task expectedTask = new Task(0, "Task", "Task_description");
-
-        Task actualTask = manager.addTask(task);
-
-        Assertions.assertEquals(expectedTask, actualTask);
-    }
-
-    @Test
-    void addTask_checkConstFields() {
-        Task task = new Task("Task", "Task_description");
-        Task expectedTask = new Task("Task", "Task_description");
-
-        Task actualTask = manager.addTask(task);
-
-        Assertions.assertEquals(expectedTask, actualTask);
-        Assertions.assertEquals(expectedTask.getName(), actualTask.getName());
-        Assertions.assertEquals(expectedTask.getDescription(), actualTask.getDescription());
-        Assertions.assertEquals(expectedTask.getStatus(), actualTask.getStatus());
-        Assertions.assertEquals(expectedTask.getId(), actualTask.getId());
-    }
-
-    @Test
-    void checkAddTaskDifferentTypeAndFindById() {
-        Task task = new Task("Task", "Task_description");
+    void testShouldNotSaveTaskInPrioritizedTasksIfIntersect() {
+        Task task = new Task("Task", "Task_description",
+                LocalDateTime.of(2024, 10, 9, 15, 30), Duration.ofMinutes(30));
         Epic epic = new Epic("Epic", "Epic_description");
-        Subtask subtask = new Subtask("Subtask", "Subtask_description");
-        Task savedTask = manager.addTask(task);
-        Epic savedEpic = manager.addEpic(epic);
-        Subtask savedSubtask = manager.addSubtask(epic, subtask);
+        Subtask subtask = new Subtask("Stubtask", "Subtask_description",
+                LocalDateTime.of(2024, 10, 10, 15, 15), Duration.ofMinutes(45));
+        Subtask subtask2 = new Subtask("Subtask_2", "Subtask_description_2",
+                LocalDateTime.of(2024, 10, 10, 15, 0), Duration.ofMinutes(75));
 
-        Task expectedTask = new Task(savedTask.getId(), "Task", "Task_description");
-        Epic expectedEpic = new Epic(savedEpic.getId(), "Epic", "Epic_description");
-        Subtask expectedSubtask = new Subtask(savedSubtask.getId(), "Subtask", "Subtask_description");
+        manager.addTask(task);
+        manager.addEpic(epic);
+        manager.addSubtask(epic, subtask);
 
-        Task actualTask = manager.getTaskById(savedTask.getId());
-        Task actualEpic = manager.getEpicById(savedEpic.getId());
-        Task actualSubtask = manager.getSubtaskById(savedSubtask.getId());
-        Assertions.assertEquals(expectedTask, actualTask);
-        Assertions.assertEquals(expectedEpic, actualEpic);
-        Assertions.assertEquals(expectedSubtask, actualSubtask);
-    }
-    /**
-     * Тест прорверяет удаление задач из менеджера и истории по Id, при удалении эпика должны удаляться его субтаски
-     **/
-    @Test
-    void checkDeleteTasksByIdFromTaskManagerAndHistory() {
-        Task task = new Task("Task", "Task_description");
-        Epic epic = new Epic("Epic", "Epic_description");
-        Subtask subtask = new Subtask("Subtask", "Subtask_description");
-        Task savedTask = manager.addTask(task);
-        Epic savedEpic = manager.addEpic(epic);
-        Subtask savedSubtask = manager.addSubtask(epic, subtask);
-
-        manager.getTaskById(savedTask.getId());
-        manager.getEpicById(savedEpic.getId());
-        manager.getSubtaskById(savedSubtask.getId());
-
-        manager.deleteTaskById(savedTask.getId());
-        manager.deleteEpicById(savedEpic.getId());
-
-        List<Task> tasks = manager.getTasks();
-        List<Epic> epics = manager.getEpics();
-        List<Subtask> subtasks = manager.getSubtasks();
-        List<Subtask> subtasksById = epic.getSubtasksList();
-        List<Task> viewHistory = manager.getHistoryList();
-
-        assertEquals(0, tasks.size());
-        assertEquals(0, epics.size());
-        assertEquals(0, subtasks.size());
-        assertEquals(0, subtasksById.size());
-        assertEquals(0, viewHistory.size());
+        Assertions.assertThrows(ManagerValidateException.class,
+                () -> manager.addSubtask(epic, subtask2), "Должно быть исключение");
     }
 
-    /**
-     * Тест прорверяет удаление всех задач из менеджера и истории по Id, при удалении эпиков должны удаляться все субтаски
-     **/
     @Test
-    void checkDeleteAllTasksFromTaskManagerAndHistory() {
-        Task task = new Task("Task", "Task_description");
-        Epic epic = new Epic("Epic", "Epic_description");
-        Subtask subtask = new Subtask("Subtask", "Subtask_description");
-        Subtask subtask2 = new Subtask("Subtask_2", "Subtask_description_2");
-        Task savedTask = manager.addTask(task);
-        Epic savedEpic = manager.addEpic(epic);
-        Subtask savedSubtask = manager.addSubtask(epic, subtask);
-        Subtask savedSubtask2 = manager.addSubtask(epic, subtask2);
+    void testShouldSaveAgainTaskIfUpdate() {
+        LocalDateTime startTime = LocalDateTime.of(2024, 10, 9, 15, 30);
+        Duration duration = Duration.ofMinutes(30);
+        Task task = new Task("Task_1", "Task_description_1", startTime, duration);
+        Task taskToCollision = new Task("Task_2", "Task_description_2", startTime.plus(duration), duration);
+        Task task3 = new Task("Task_3", "Task_description_3", startTime.plus(duration.multipliedBy(2)), duration);
 
-        manager.getTaskById(savedTask.getId());
-        manager.getEpicById(savedEpic.getId());
-        manager.getSubtaskById(savedSubtask.getId());
-        manager.getSubtaskById(savedSubtask2.getId());
+        Task createdTask = manager.addTask(task);
+        Task taskToUpdate = new Task(createdTask.getId(), "Task_4", "Task_description_4", startTime.minus(duration), duration);
+        manager.addTask(taskToCollision);
+        manager.addTask(task3);
+        manager.updateTask(taskToUpdate);
 
-        manager.deleteTasks();
-        manager.deleteEpics();
-
-        List<Task> tasks = manager.getTasks();
-        List<Epic> epics = manager.getEpics();
-        List<Subtask> subtasks = manager.getSubtasks();
-        List<Task> viewHistory = manager.getHistoryList();
-
-        assertEquals(0, tasks.size());
-        assertEquals(0, epics.size());
-        assertEquals(0, subtasks.size());
-        assertEquals(0, viewHistory.size());
+        Assertions.assertEquals(3, manager.getPrioritizedTasks().size());
     }
 }
