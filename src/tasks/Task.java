@@ -9,22 +9,20 @@ public class Task {
     private String name;
     private String description;
     private int id;
-    private Status status;
-    private final TaskType type = TaskType.TASK;
+    private Status status = Status.NEW;
+    private TaskType type = TaskType.TASK;
     protected Duration duration;
     protected LocalDateTime startTime;
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
-        this.status = Status.NEW;
     }
 
     public Task(int id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.status = Status.NEW;
     }
 
     public Task(int id, String name, String description, Status status) {
@@ -39,7 +37,6 @@ public class Task {
         this.description = description;
         this.startTime = startTime;
         this.duration = duration;
-        this.status = Status.NEW;
     }
 
     public Task(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
@@ -57,7 +54,6 @@ public class Task {
         this.description = description;
         this.startTime = startTime;
         this.duration = duration;
-        this.status = Status.NEW;
     }
 
     public String getName() {
@@ -114,6 +110,10 @@ public class Task {
 
     public TaskType getType() {
         return type;
+    }
+
+    public void setType(TaskType type) {
+        this.type = type;
     }
 
     public Task getClone() {

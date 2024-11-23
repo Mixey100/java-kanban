@@ -88,10 +88,10 @@ class InMemoryHistoryManagerTest {
     public void testCheckDeleteTaskInHistory() {
         Task task = new Task("Task", "Task_description");
         Epic epic = new Epic("Epic", "Epic_description");
-        Subtask subtask = new Subtask("Subtask", "Subtask_description");
+        Subtask subtask = new Subtask("Subtask", "Subtask_description", epic);
         Task savedTask = manager.addTask(task);
         Epic savedEpic = manager.addEpic(epic);
-        Subtask savedSubtask = manager.addSubtask(epic, subtask);
+        Subtask savedSubtask = manager.addSubtask(subtask);
 
         manager.getTaskById(savedTask.getId());
         manager.getEpicById(savedEpic.getId());

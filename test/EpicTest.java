@@ -23,8 +23,8 @@ class EpicTest {
     @Test
     void testShouldChangeEpicStatusIfChangedSubtaskStatus() {
         Epic epic = new Epic("Epic", "Epic_description");
-        Subtask subtask1 = new Subtask(1, "Subtask_1", "Subtask_description_1");
-        Subtask subtask2 = new Subtask(2, "Subtask_2", "Subtask_description_2");
+        Subtask subtask1 = new Subtask(1, "Subtask_1", "Subtask_description_1", epic);
+        Subtask subtask2 = new Subtask(2, "Subtask_2", "Subtask_description_2", epic);
 
         epic.addSubtask(subtask1);
         epic.addSubtask(subtask2);
@@ -46,9 +46,9 @@ class EpicTest {
     void testShouldDetermineTimeEpic() {
         Epic epic = new Epic(0, "Epic", "Epic_description");
         Subtask subtask1 = new Subtask(1, "Stubtask", "Subtask_description",
-                LocalDateTime.of(2024, 10, 10, 15, 15), Duration.ofMinutes(45));
+                LocalDateTime.of(2024, 10, 10, 15, 15), Duration.ofMinutes(45), epic);
         Subtask subtask2 = new Subtask(2, "Subtask_2", "Subtask_description_2",
-                LocalDateTime.of(2024, 10, 10, 17, 30), Duration.ofMinutes(30));
+                LocalDateTime.of(2024, 10, 10, 17, 30), Duration.ofMinutes(30), epic);
 
         epic.addSubtask(subtask1);
         epic.addSubtask(subtask2);
