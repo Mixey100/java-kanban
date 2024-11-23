@@ -2,7 +2,6 @@ package server;
 
 import com.sun.net.httpserver.HttpServer;
 import handlers.*;
-import managers.HistoryManager;
 import managers.Managers;
 import managers.TaskManager;
 

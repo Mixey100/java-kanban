@@ -1,9 +1,7 @@
 package handlers;
 
-import adapters.TaskListTypeToken;
 import com.sun.net.httpserver.HttpExchange;
 import managers.TaskManager;
-
 import java.util.regex.Pattern;
 
 public class PrioritizedHandler extends BaseHttpHandler {
