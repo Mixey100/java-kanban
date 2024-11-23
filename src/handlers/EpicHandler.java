@@ -105,8 +105,8 @@ public class EpicHandler extends TaskHandler {
 
     private void deleteEpic(HttpExchange exchange, int id) {
         try {
-            Epic Epic = manager.deleteEpicById(id);
-            if (Objects.nonNull(Epic)) {
+            Epic epic = manager.deleteEpicById(id);
+            if (Objects.nonNull(epic)) {
                 sendText(exchange, "Эпик c id " + id + " успешно удален", 200);
             } else {
                 sendText(exchange, "Эпик c id " + id + " не существует", 404);
