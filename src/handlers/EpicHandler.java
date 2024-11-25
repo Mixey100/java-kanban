@@ -4,8 +4,10 @@ import com.sun.net.httpserver.HttpExchange;
 import managers.TaskManager;
 import tasks.Epic;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class EpicHandler extends TaskHandler {
@@ -16,7 +18,7 @@ public class EpicHandler extends TaskHandler {
 
     @Override
     public void handle(HttpExchange exchange) {
-        try {
+        try (exchange) {
             String path = exchange.getRequestURI().getPath();
             String method = exchange.getRequestMethod();
             String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
@@ -31,7 +33,13 @@ public class EpicHandler extends TaskHandler {
                         if (body.isEmpty()) {
                             sendText(exchange, "Тело ответа пустое", 400);
                         } else {
-                            addEpic(exchange, body);
+                            Epic epic = gson.fromJson(body, Epic.class);
+                            Integer epicId = epic.getId();
+                            if (epicId == null) {
+                                addEpic(exchange, body);
+                            } else {
+                                updateEpic(exchange, body);
+                            }
                         }
                 }
             } else if (Pattern.matches("/epics/\\d+", path)) {
@@ -54,10 +62,9 @@ public class EpicHandler extends TaskHandler {
             } else {
                 sendText(exchange, "Неизвестный запрос", 404);
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        } finally {
-            exchange.close();
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при обработке запроса эпика", e);
         }
     }
 
@@ -70,8 +77,9 @@ public class EpicHandler extends TaskHandler {
             } else {
                 sendText(exchange, "Эпик c id " + id + " не существует", 404);
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при получение подзадач эпика", e);
         }
     }
 
@@ -84,8 +92,20 @@ public class EpicHandler extends TaskHandler {
             } else {
                 sendText(exchange, "Эпик пустой", 404);
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при добавлении эпика", e);
+        }
+    }
+
+    private void updateEpic(HttpExchange exchange, String body) throws IOException {
+        try {
+            Epic epic = manager.updateEpic(gson.fromJson(body, Epic.class));
+            String response = gson.toJson(epic);
+            sendText(exchange, response, 201);
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при обновлении эпика", e);
         }
     }
 
@@ -98,8 +118,9 @@ public class EpicHandler extends TaskHandler {
             } else {
                 sendText(exchange, "Эпика c " + id + " не существует", 404);
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при получении эпика", e);
         }
     }
 
@@ -111,8 +132,9 @@ public class EpicHandler extends TaskHandler {
             } else {
                 sendText(exchange, "Эпик c id " + id + " не существует", 404);
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при удалении эпика", e);
         }
     }
 }

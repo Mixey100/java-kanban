@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import server.HttpTaskServer;
 import tasks.Epic;
 import tasks.Subtask;
+import tasks.Task;
 
 import java.io.IOException;
 import java.net.URI;
@@ -97,6 +98,32 @@ class EpicHandlerTest {
         assertNotNull(epics);
         assertEquals(1, epics.size());
         assertEquals("Epic", epics.getFirst().getName());
+    }
+
+    @Test
+    public void testShouldUpdateEpic() throws IOException, InterruptedException {
+        Epic epic = new Epic("Epic", "Epic_description", LocalDateTime.now(), Duration.ofMinutes(45));
+        manager.addEpic(epic);
+
+        Epic updateEpic = new Epic(0, "Task_update", "Task_update_description", LocalDateTime.now().plusMinutes(40),
+                Duration.ofMinutes(75));
+        String epicJson = gson.toJson(updateEpic);
+
+        URI url = URI.create("http://localhost:8080/epics");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(url)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(epicJson))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(201, response.statusCode());
+
+        List<Epic> epics = manager.getEpics();
+
+        assertNotNull(epics);
+        assertEquals(1, epics.size());
+        assertEquals("Task_update", epics.getFirst().getName());
     }
 
     @Test

@@ -6,10 +6,10 @@ import managers.TaskManager;
 import tasks.Epic;
 import tasks.Subtask;
 
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class SubtaskHandler extends TaskHandler {
@@ -20,7 +20,7 @@ public class SubtaskHandler extends TaskHandler {
 
     @Override
     public void handle(HttpExchange exchange) {
-        try {
+        try (exchange) {
             String path = exchange.getRequestURI().getPath();
             String method = exchange.getRequestMethod();
             String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
@@ -35,7 +35,13 @@ public class SubtaskHandler extends TaskHandler {
                         if (body.isEmpty()) {
                             sendText(exchange, "Тело ответа пустое", 400);
                         } else {
-                            addSubtask(exchange, body);
+                            Subtask subtask = gson.fromJson(body, Subtask.class);
+                            Integer subtaskId = subtask.getId();
+                            if (subtaskId == null) {
+                                addSubtask(exchange, body);
+                            } else {
+                                updateSubtask(exchange, body);
+                            }
                         }
                 }
             } else if (Pattern.matches("/subtasks/\\d+", path)) {
@@ -48,52 +54,51 @@ public class SubtaskHandler extends TaskHandler {
                         case "DELETE":
                             deleteSubtask(exchange, id);
                             break;
-                        case "POST":
-                            if (body.isEmpty()) {
-                                sendText(exchange, "Тело ответа пустое", 400);
-                            } else {
-                                updateSubtask(exchange, body);
-                            }
                     }
                 }
             } else {
                 sendText(exchange, "Неизвестный запрос", 404);
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        } finally {
-            exchange.close();
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при обработке запроса подзадачи", e);
         }
     }
 
     private void addSubtask(HttpExchange exchange, String body) throws IOException {
         try {
-            Subtask subTaskFromJSON = restoreSubtaskFromManager(body);
-            Subtask subtask = manager.addSubtask(subTaskFromJSON);
+            Subtask subTaskFromJson = restoreSubtaskFromManager(body);
+            Subtask subtask = manager.addSubtask(subTaskFromJson);
             String response = gson.toJson(subtask);
             sendText(exchange, response, 201);
         } catch (ManagerValidateException exception) {
             sendText(exchange, "Подзадача пересекается с существующими задачами", 406);
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при добавлении подзадачи", e);
         }
     }
 
     private void updateSubtask(HttpExchange exchange, String body) throws IOException {
         try {
-            Subtask subtaskFromJSON = restoreSubtaskFromManager(body);
-            Subtask subtask = manager.updateSubtask(subtaskFromJSON);
+            Subtask subtaskFromJson = restoreSubtaskFromManager(body);
+            Subtask subtask = manager.updateSubtask(subtaskFromJson);
             String response = gson.toJson(subtask);
             sendText(exchange, response, 201);
         } catch (ManagerValidateException exception) {
             sendText(exchange, "Подзадача пересекается с существующими задачами", 406);
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при обновлении подзадачи", e);
         }
     }
 
     private Subtask restoreSubtaskFromManager(String body) {
-        Subtask subtaskFromJSON = gson.fromJson(body, Subtask.class);
-        Integer epicId = subtaskFromJSON.getEpicId();
+        Subtask subtaskFromJson = gson.fromJson(body, Subtask.class);
+        Integer epicId = subtaskFromJson.getEpicId();
         Epic actualEpic = manager.getEpicById(epicId);
-        subtaskFromJSON.setEpic(actualEpic);
-        return subtaskFromJSON;
+        subtaskFromJson.setEpic(actualEpic);
+        return subtaskFromJson;
     }
 
     private void getSubtask(HttpExchange exchange, int id) {
@@ -105,8 +110,9 @@ public class SubtaskHandler extends TaskHandler {
             } else {
                 sendText(exchange, "Подзадачи c id" + id + " не существует", 404);
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при получении подзадачи", e);
         }
     }
 
@@ -118,8 +124,9 @@ public class SubtaskHandler extends TaskHandler {
             } else {
                 sendText(exchange, "Подзадачи c id " + id + " не существует", 404);
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при удалении подзадачи", e);
         }
     }
 }

@@ -8,7 +8,7 @@ public class Task {
 
     private String name;
     private String description;
-    private int id;
+    private Integer id;
     private Status status = Status.NEW;
     private TaskType type = TaskType.TASK;
     protected Duration duration;
@@ -19,13 +19,13 @@ public class Task {
         this.description = description;
     }
 
-    public Task(int id, String name, String description) {
+    public Task(Integer id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
     }
 
-    public Task(int id, String name, String description, Status status) {
+    public Task(Integer id, String name, String description, Status status) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -39,7 +39,7 @@ public class Task {
         this.duration = duration;
     }
 
-    public Task(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+    public Task(Integer id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -48,7 +48,7 @@ public class Task {
         this.duration = duration;
     }
 
-    public Task(int id, String name, String description, LocalDateTime startTime, Duration duration) {
+    public Task(Integer id, String name, String description, LocalDateTime startTime, Duration duration) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -64,7 +64,7 @@ public class Task {
         return description;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

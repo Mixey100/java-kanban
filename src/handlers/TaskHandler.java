@@ -8,6 +8,7 @@ import tasks.Task;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class TaskHandler extends BaseHttpHandler {
@@ -18,7 +19,7 @@ public class TaskHandler extends BaseHttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) {
-        try {
+        try (exchange) {
             String path = exchange.getRequestURI().getPath();
             String method = exchange.getRequestMethod();
             String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
@@ -33,7 +34,13 @@ public class TaskHandler extends BaseHttpHandler {
                         if (body.isEmpty()) {
                             sendText(exchange, "Тело ответа пустое", 400);
                         } else {
-                            addTask(exchange, body);
+                            Task task = gson.fromJson(body, Task.class);
+                            Integer taskId = task.getId();
+                            if (taskId == null) {
+                                addTask(exchange, body);
+                            } else {
+                                updateTask(exchange, body);
+                            }
                         }
                 }
             } else if (Pattern.matches("/tasks/\\d+", path)) {
@@ -46,21 +53,14 @@ public class TaskHandler extends BaseHttpHandler {
                         case "DELETE":
                             deleteTask(exchange, id);
                             break;
-                        case "POST":
-                            if (body.isEmpty()) {
-                                sendText(exchange, "Тело ответа пустое", 400);
-                            } else {
-                                updateTask(exchange, body);
-                            }
                     }
                 }
             } else {
                 sendText(exchange, "Неизвестный запрос", 404);
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        } finally {
-            exchange.close();
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при обработке запроса задачи", e);
         }
     }
 
@@ -69,8 +69,11 @@ public class TaskHandler extends BaseHttpHandler {
             Task task = manager.addTask(gson.fromJson(body, Task.class));
             String response = gson.toJson(task);
             sendText(exchange, response, 201);
-        } catch (ManagerValidateException exception) {
+        } catch (ManagerValidateException e) {
             sendText(exchange, "Задача пересекается с существующими задачами", 406);
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при добавлении задачи", e);
         }
     }
 
@@ -79,8 +82,11 @@ public class TaskHandler extends BaseHttpHandler {
             Task task = manager.updateTask(gson.fromJson(body, Task.class));
             String response = gson.toJson(task);
             sendText(exchange, response, 201);
-        } catch (ManagerValidateException exception) {
+        } catch (ManagerValidateException e) {
             sendText(exchange, "Задача пересекается с существующими задачами", 406);
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при обновлении задачи", e);
         }
     }
 
@@ -93,8 +99,9 @@ public class TaskHandler extends BaseHttpHandler {
             } else {
                 sendText(exchange, "Задачи c id " + id + " не существует", 404);
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при получении задачи", e);
         }
     }
 
@@ -106,8 +113,9 @@ public class TaskHandler extends BaseHttpHandler {
             } else {
                 sendText(exchange, "Задачи c id " + id + " не существует", 404);
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (Exception e) {
+            sendInternalError(exchange);
+            logger.log(Level.SEVERE, "Ошибка при удалении задачи", e);
         }
     }
 

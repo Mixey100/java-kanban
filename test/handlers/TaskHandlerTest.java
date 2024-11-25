@@ -104,11 +104,11 @@ public class TaskHandlerTest {
         Task task = new Task("Task", "Task_description", LocalDateTime.now(), Duration.ofMinutes(45));
         manager.addTask(task);
 
-        Task updateTask = new Task("Task_update", "Task_update_description", LocalDateTime.now().plusMinutes(40),
+        Task updateTask = new Task(0, "Task_update", "Task_update_description", LocalDateTime.now().plusMinutes(40),
                 Duration.ofMinutes(75));
         String taskJson = gson.toJson(updateTask);
 
-        URI url = URI.create("http://localhost:8080/tasks/0");
+        URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .header("Content-Type", "application/json")
@@ -213,7 +213,7 @@ public class TaskHandlerTest {
         manager.addTask(task2);
         String taskJson = gson.toJson(updTask);
 
-        URI url = URI.create("http://localhost:8080/tasks/0");
+        URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .header("Content-Type", "application/json")

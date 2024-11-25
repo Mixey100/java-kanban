@@ -27,7 +27,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void testShouldSaveTask() {
         Task task = new Task("Task", "Task_description");
-        Task expectedTask = new Task("Task", "Task_description");
+        Task expectedTask = new Task(0,"Task", "Task_description");
 
         Task actualTask = manager.addTask(task);
 
@@ -71,7 +71,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void testCheckConstFields() {
         Task task = new Task("Task", "Task_description");
-        Task expectedTask = new Task("Task", "Task_description");
+        Task expectedTask = new Task(0,"Task", "Task_description");
 
         Task actualTask = manager.addTask(task);
 

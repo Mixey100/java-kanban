@@ -13,8 +13,8 @@ class EpicTest {
     @Test
     void testShouldEqualsEpicIfEqualsId() {
 
-        Epic epic1 = new Epic("Epic1", "Epic1_description");
-        Epic epic2 = new Epic("Epic2", "Epic2_description");
+        Epic epic1 = new Epic(0, "Epic1", "Epic1_description");
+        Epic epic2 = new Epic(0, "Epic2", "Epic2_description");
 
         Assertions.assertEquals(epic1.getId(), epic2.getId());
         Assertions.assertEquals(epic1, epic2, "Экземпляры класса не равны");

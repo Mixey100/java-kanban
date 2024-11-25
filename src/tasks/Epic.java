@@ -22,13 +22,18 @@ public class Epic extends Task {
         setType(TaskType.EPIC);
     }
 
-    public Epic(int id, String name, String description, Status status) {
+    public Epic(Integer id, String name, String description, Status status) {
         super(id, name, description, status);
         setType(TaskType.EPIC);
     }
 
     public Epic(String name, String description, LocalDateTime startTime, Duration duration) {
         super(name, description, startTime, duration);
+        setType(TaskType.EPIC);
+    }
+
+    public Epic(Integer id, String name, String description, LocalDateTime startTime, Duration duration) {
+        super(id, name, description, startTime, duration);
         setType(TaskType.EPIC);
     }
 

@@ -12,8 +12,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BaseHttpHandler implements HttpHandler {
+    protected static final Logger logger = Logger.getAnonymousLogger();
 
     protected final TaskManager manager;
     protected final Gson gson = new GsonBuilder()
@@ -36,5 +39,13 @@ public class BaseHttpHandler implements HttpHandler {
         exchange.sendResponseHeaders(code, response.length);
         exchange.getResponseBody().write(response);
         exchange.close();
+    }
+
+    protected void sendInternalError(HttpExchange exchange) {
+        try (exchange) {
+            exchange.sendResponseHeaders(500, 0);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "error while send internal error", e);
+        }
     }
 }

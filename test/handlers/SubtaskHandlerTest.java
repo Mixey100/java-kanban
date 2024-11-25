@@ -123,7 +123,7 @@ class SubtaskHandlerTest {
                 Duration.ofMinutes(75), epic);
         String subtaskJson = gson.toJson(updateSubtask);
 
-        URI url = URI.create("http://localhost:8080/subtasks/1");
+        URI url = URI.create("http://localhost:8080/subtasks");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .header("Content-Type", "application/json")
@@ -208,7 +208,7 @@ class SubtaskHandlerTest {
 
     @Test
     public void testShouldNotAddSubtaskIntersection() throws IOException, InterruptedException {
-        Epic epic = new Epic("Epic", "Epic_description");
+        Epic epic = new Epic(0,"Epic", "Epic_description");
 
         Subtask subtask = new Subtask("Subtask", "Subtask_description", LocalDateTime.now(),
                 Duration.ofMinutes(45), epic);
@@ -235,7 +235,7 @@ class SubtaskHandlerTest {
     public void testShouldNotUpdateSubtaskIntersection() throws IOException, InterruptedException {
         Task task = new Task("Task", "Task_description", LocalDateTime.now().plusMinutes(50),
                 Duration.ofMinutes(45));
-        Epic epic = new Epic("Epic", "Epic_description");
+        Epic epic = new Epic(0,"Epic", "Epic_description");
 
         Subtask subtask = new Subtask("Subtask", "Subtask_description", LocalDateTime.now(),
                 Duration.ofMinutes(45), epic);
@@ -251,7 +251,7 @@ class SubtaskHandlerTest {
 
         String taskJson = gson.toJson(subtaskUpdate);
 
-        URI url = URI.create("http://localhost:8080/subtasks/2");
+        URI url = URI.create("http://localhost:8080/subtasks");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .header("Content-Type", "application/json")
