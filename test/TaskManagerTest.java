@@ -27,7 +27,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void testShouldSaveTask() {
         Task task = new Task("Task", "Task_description");
-        Task expectedTask = new Task("Task", "Task_description");
+        Task expectedTask = new Task(0,"Task", "Task_description");
 
         Task actualTask = manager.addTask(task);
 
@@ -71,7 +71,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void testCheckConstFields() {
         Task task = new Task("Task", "Task_description");
-        Task expectedTask = new Task("Task", "Task_description");
+        Task expectedTask = new Task(0,"Task", "Task_description");
 
         Task actualTask = manager.addTask(task);
 
@@ -86,14 +86,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     void testCheckAddTaskDifferentTypeAndFindById() {
         Task task = new Task("Task", "Task_description");
         Epic epic = new Epic("Epic", "Epic_description");
-        Subtask subtask = new Subtask("Subtask", "Subtask_description");
+        Subtask subtask = new Subtask("Subtask", "Subtask_description", epic);
         Task savedTask = manager.addTask(task);
         Epic savedEpic = manager.addEpic(epic);
-        Subtask savedSubtask = manager.addSubtask(epic, subtask);
+        Subtask savedSubtask = manager.addSubtask(subtask);
 
         Task expectedTask = new Task(savedTask.getId(), "Task", "Task_description");
         Epic expectedEpic = new Epic(savedEpic.getId(), "Epic", "Epic_description");
-        Subtask expectedSubtask = new Subtask(savedSubtask.getId(), "Subtask", "Subtask_description");
+        Subtask expectedSubtask = new Subtask(savedSubtask.getId(), "Subtask", "Subtask_description", expectedEpic);
 
         Task actualTask = manager.getTaskById(savedTask.getId());
         Task actualEpic = manager.getEpicById(savedEpic.getId());
@@ -107,10 +107,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     void testCheckDeleteTasksByIdFromTaskManagerAndHistory() {
         Task task = new Task("Task", "Task_description");
         Epic epic = new Epic("Epic", "Epic_description");
-        Subtask subtask = new Subtask("Subtask", "Subtask_description");
+        Subtask subtask = new Subtask("Subtask", "Subtask_description", epic);
         Task savedTask = manager.addTask(task);
         Epic savedEpic = manager.addEpic(epic);
-        Subtask savedSubtask = manager.addSubtask(epic, subtask);
+        Subtask savedSubtask = manager.addSubtask(subtask);
 
         manager.getTaskById(savedTask.getId());
         manager.getEpicById(savedEpic.getId());
@@ -136,12 +136,12 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     void testCheckDeleteAllTasksFromTaskManagerAndHistory() {
         Task task = new Task("Task", "Task_description");
         Epic epic = new Epic("Epic", "Epic_description");
-        Subtask subtask = new Subtask("Subtask", "Subtask_description");
-        Subtask subtask2 = new Subtask("Subtask_2", "Subtask_description_2");
+        Subtask subtask = new Subtask("Subtask", "Subtask_description", epic);
+        Subtask subtask2 = new Subtask("Subtask_2", "Subtask_description_2", epic);
         Task savedTask = manager.addTask(task);
         Epic savedEpic = manager.addEpic(epic);
-        Subtask savedSubtask = manager.addSubtask(epic, subtask);
-        Subtask savedSubtask2 = manager.addSubtask(epic, subtask2);
+        Subtask savedSubtask = manager.addSubtask(subtask);
+        Subtask savedSubtask2 = manager.addSubtask(subtask2);
 
         manager.getTaskById(savedTask.getId());
         manager.getEpicById(savedEpic.getId());

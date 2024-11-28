@@ -8,26 +8,24 @@ public class Task {
 
     private String name;
     private String description;
-    private int id;
-    private Status status;
-    private final TaskType type = TaskType.TASK;
+    private Integer id;
+    private Status status = Status.NEW;
+    private TaskType type = TaskType.TASK;
     protected Duration duration;
     protected LocalDateTime startTime;
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
-        this.status = Status.NEW;
     }
 
-    public Task(int id, String name, String description) {
+    public Task(Integer id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.status = Status.NEW;
     }
 
-    public Task(int id, String name, String description, Status status) {
+    public Task(Integer id, String name, String description, Status status) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -39,10 +37,9 @@ public class Task {
         this.description = description;
         this.startTime = startTime;
         this.duration = duration;
-        this.status = Status.NEW;
     }
 
-    public Task(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+    public Task(Integer id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -51,13 +48,12 @@ public class Task {
         this.duration = duration;
     }
 
-    public Task(int id, String name, String description, LocalDateTime startTime, Duration duration) {
+    public Task(Integer id, String name, String description, LocalDateTime startTime, Duration duration) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.startTime = startTime;
         this.duration = duration;
-        this.status = Status.NEW;
     }
 
     public String getName() {
@@ -68,7 +64,7 @@ public class Task {
         return description;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -114,6 +110,10 @@ public class Task {
 
     public TaskType getType() {
         return type;
+    }
+
+    public void setType(TaskType type) {
+        this.type = type;
     }
 
     public Task getClone() {

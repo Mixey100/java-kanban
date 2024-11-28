@@ -39,14 +39,14 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
                 LocalDateTime.of(2024, 10, 9, 15, 30), Duration.ofMinutes(30));
         Epic epic = new Epic("Epic", "Epic_description");
         Subtask subtask = new Subtask("Stubtask", "Subtask_description",
-                LocalDateTime.of(2024, 10, 10, 15, 15), Duration.ofMinutes(45));
+                LocalDateTime.of(2024, 10, 10, 15, 15), Duration.ofMinutes(45), epic);
         Subtask subtask2 = new Subtask("Subtask_2", "Subtask_description_2",
-                LocalDateTime.of(2024, 10, 10, 17, 30), Duration.ofMinutes(30));
+                LocalDateTime.of(2024, 10, 10, 17, 30), Duration.ofMinutes(30), epic);
 
         manager.addTask(task);
         manager.addEpic(epic);
-        manager.addSubtask(epic, subtask);
-        manager.addSubtask(epic, subtask2);
+        manager.addSubtask(subtask);
+        manager.addSubtask(subtask2);
 
         FileBackedTaskManager backedManager = FileBackedTaskManager.loadFromFile(file);
         assertEquals(manager.getTasks(), backedManager.getTasks());

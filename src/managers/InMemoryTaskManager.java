@@ -18,10 +18,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task addTask(Task task) {
+        addToPrioritizedTasks(task);
         int id = getId();
         task.setId(id);
         tasksMap.put(task.getId(), task);
-        addToPrioritizedTasks(task);
         return task;
     }
 
@@ -34,12 +34,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Subtask addSubtask(Epic epic, Subtask subtask) {
+    public Subtask addSubtask(Subtask subtask) {
+        addToPrioritizedTasks(subtask);
         int id = getId();
         subtask.setId(id);
         subtasksMap.put(subtask.getId(), subtask);
+        Epic epic = subtask.getEpic();
         epic.addSubtask(subtask);
-        addToPrioritizedTasks(subtask);
         return subtask;
     }
 
@@ -108,11 +109,12 @@ public class InMemoryTaskManager implements TaskManager {
             }
             if (count == prioritizedTasks.size()) {
                 addToPrioritizedTasks(newTask);
+                tasksMap.put(taskId, newTask);
+                return newTask;
             } else {
                 prioritizedTasks.add(tasksMap.get(taskId));
+                throw new ManagerValidateException("Найдено пересечение");
             }
-            tasksMap.put(taskId, newTask);
-            return newTask;
         } else {
             System.out.println("Задачи с таким номером не существует.");
             return null;
@@ -146,13 +148,15 @@ public class InMemoryTaskManager implements TaskManager {
             }
             if (count == prioritizedTasks.size()) {
                 addToPrioritizedTasks(newSubtask);
+                subtasksMap.put(subtaskId,newSubtask);
+                Epic epic = newSubtask.getEpic();
+                epic.addSubtask(newSubtask);
+                subtasksMap.put(subtaskId, newSubtask);
+                return newSubtask;
             } else {
-                prioritizedTasks.add(tasksMap.get(subtaskId));
+                prioritizedTasks.add(subtasksMap.get(subtaskId));
+                throw new ManagerValidateException("Найдено пересечение");
             }
-            Epic epic = newSubtask.getEpic();
-            epic.addSubtask(newSubtask);
-            subtasksMap.put(subtaskId, newSubtask);
-            return newSubtask;
         } else {
             System.out.println("Подзадачи с таким номером не существует.");
             return null;
@@ -160,14 +164,15 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteTaskById(int id) {
+    public Task deleteTaskById(int id) {
         prioritizedTasks.remove(tasksMap.get(id));
-        tasksMap.remove(id);
+        Task task = tasksMap.remove(id);
         historyManager.remove(id);
+        return task;
     }
 
     @Override
-    public void deleteEpicById(int id) {
+    public Epic deleteEpicById(int id) {
         Epic epic = epicsMap.get(id);
         for (Subtask subtask : getSubtasksByEpic(epic)) {
             int subtaskId = subtask.getId();
@@ -179,16 +184,20 @@ public class InMemoryTaskManager implements TaskManager {
         epicsMap.remove(id);
         historyManager.remove(id);
         epic.removeSubtasks();
+        return epic;
     }
 
     @Override
-    public void deleteSubtaskById(int id) {
+    public Subtask deleteSubtaskById(int id) {
         Subtask subtask = subtasksMap.get(id);
-        prioritizedTasks.remove(subtask);
-        Epic epic = subtask.getEpic();
-        epic.removeSubtask(id);
+        if (subtask != null) {
+            prioritizedTasks.remove(subtask);
+            Epic epic = subtask.getEpic();
+            epic.removeSubtask(id);
+        }
         subtasksMap.remove(id);
         historyManager.remove(id);
+        return subtask;
     }
 
     @Override
@@ -229,6 +238,7 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+    @Override
     public List<Task> getPrioritizedTasks() {
         return new ArrayList<>(prioritizedTasks);
     }
